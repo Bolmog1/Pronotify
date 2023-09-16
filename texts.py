@@ -24,3 +24,6 @@ RGPD_text = "**On y est presque ! (Vraiment)**\n\n"\
         "wiki/Règlement_général_sur_la_protection_des_données>) dont la suppression des " \
         "'données personnel' *(c'est juste t'a moyennes mais c'est pas moi qui fait les lois :man_shrugging:‍️)*\n\n"\
         "- La question est donc accepte tu qu'on enregistre ces quelques données ?"
+
+bienvenue_text = "Super !\n**Tu sera désormais notifier des dernières actualité de ton compte Pronote !**" \
+                 "\nTu peux modifier t'es préférences en termes de notifications avec `/parametre` !"
