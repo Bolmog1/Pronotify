@@ -26,6 +26,17 @@ def get_user_json(fichier):
     return data
 
 
+def change_user_json(id, para, value):
+    import json
+    with open(f'{id}.json', 'r') as f:
+        data = json.load(f)
+    f.close()
+    data[para] = value
+    with open(f'{id}.json', 'w') as f:
+        json.dump(data, f)
+    f.close()
+
+
 def fichiers_user():
     import os
     from config import path_user_files

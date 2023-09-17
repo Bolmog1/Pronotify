@@ -83,7 +83,6 @@ async def my_task():
         user = await bot.fetch_user(data['ID'])  # Rechercher l'objet user
         msg = await user.fetch_message(data["idMessageMdP"])  # Rechercher le message Mdp/id
         detail = extract(msg.content)
-        actualisation_pronote(detail[0], detail[1], detail[2], data)
         etab, id, mdp = detail[0], detail[1], detail[2]
         if etab[0] == '<':
             etab = etab[1:-1]
@@ -96,17 +95,21 @@ async def my_task():
                     moyenne_eleve = []
                     for moyenne in moyennes_notes:
                         moyenne_eleve.append(float(moyenne.student.replace(',', '.')))
-                    moyenne_general = round(sum(moyenne_eleve) / len(moyenne_eleve), 2)  # Calcul de la moyennes général
-                    if moyenne_general > data['moyenne']:
+                    moyenne_general = None
+                    if len(moyenne_eleve) != 0:
+                        moyenne_general = round(sum(moyenne_eleve) / len(moyenne_eleve), 2)
+                    if data['moyenne'] != None and moyenne_general > data['moyenne']:
                         deco = discord.Embed(title=':bell: Notification Moyenne Général !',
                                              description=f":arrow_up_small: de {data['moyenne']} à {moyenne_general}",
                                              colour=0x3498db)
                         await user.send(embed=deco)
-                    elif moyenne_general < data['moyenne']:
+                    elif data['moyenne'] != None and moyenne_general < data['moyenne']:
                         deco = discord.Embed(title=':bell: Notification Moyenne Général !',
                                              description=f":arrow_down_small: de {data['moyenne']} à {moyenne_general}",
                                              colour=0x3498db)
                         await user.send(embed=deco)
+                    if data['moyenne'] != None and data["moyenne"] != moyenne_general:
+                        change_user_json(user.id, 'moyenne', moyenne_general)
                 if data["NotificationNotes"]:  # ----- NOTES -----
                     t = time.localtime()
                     if t.tm_hour == 18 and t.tm_min < 20:  # S'il est 18h
@@ -124,7 +127,7 @@ async def my_task():
                             deco = discord.Embed(title=':bell: Notification Notes !',
                                                  description=display, colour=0x27ae60)
                             await user.send(embed=deco)
-                if data["NotificationsInfos"]:
+                if data["NotificationsInfos"]:  # ----- Infos -----
                     t = time.localtime()
                     if t.tm_min > 40:
                         nouvelles_infos = []
@@ -153,10 +156,43 @@ async def my_task():
                             deco = discord.Embed(title=':bell: Notification Infos/Sondages !',
                                                  description=display, colour=0x9b59b6)
                             await user.send(embed=deco)
-                if data['']:  # CONTINUER ICI
-                    pass
+                if data['NotificationAbsence']:
+                    nouvelles_infos = []
+                    t = time.localtime()
+                    if t.tm_hour == 18 and t.tm_min < 20:
+                        import datetime
+                        trimestre = client.current_period
+                        absences = trimestre.absences
+                        for absence in absences:
+                            if absence.from_date == datetime.date.today():
+                                nouvelles_infos.append(f"Absence aujourd'hui pendant {absence.hours}")
+                    if len(nouvelles_infos) > 0:
+                        display = ""
+                        for info in nouvelles_infos:
+                            display += f"{info}\n"
+                        deco = discord.Embed(title=':bell: Notification Absences !',
+                                             description=display, colour=0xe74c3c)
+                        await user.send(embed=deco)
+                if data['NotificationsDevoirs']:
+                    nouvelles_infos = []
+                    t = time.localtime()
+                    if t.tm_hour == 18 and t.tm_min < 20:
+                        import datetime
+                        devoirs = client.homework(datetime.date.today())
+                        for devoir in devoirs:
+                            nouvelles_infos.append(f"{devoir.description} de **{devoir.subject.name}**")
+                    if len(nouvelles_infos) > 0:
+                        display = ""
+                        for info in nouvelles_infos:
+                            display += f"{info}\n"
+                        deco = discord.Embed(title=':bell: Notification des Devoirs pour demain !',
+                                             description=display, colour=0xf1c40f)
+                        await user.send(embed=deco)
+                change_user_json(user.id, 'PreviousConnectionNotFailed', True)
         except:
-            pass
+            if data["PreviousConnectionNotFailed"]:
+                await user.send('Une erreur est survenu durant la connexion a ton compte !')
+                change_user_json(user.id, 'PreviousConnectionNotFailed', False)
 
 
 @commands.dm_only()
