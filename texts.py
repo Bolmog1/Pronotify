@@ -27,3 +27,60 @@ RGPD_text = "**On y est presque ! (Vraiment)**\n\n"\
 
 bienvenue_text = "Super !\n**Tu sera désormais notifier des dernières actualité de ton compte Pronote !**" \
                  "\nTu peux modifier t'es préférences en termes de notifications avec `/parametre` !"
+
+
+def preference_text(data):
+
+        text = ":bell: Tu peut modifier t'es préférences ici ! \n " \
+               "voici t'es préférences actuellement :point_down: :\n\n> :bar_chart: "
+
+        if data["NotificationMoyenne"]:
+                text += "Notification de moyenne : **Activée**"
+        else:
+                text += "Notification de moyenne : **Désactivée**"
+
+        text += "\n> *Tu recevra une notification à chaque modification de ta moyenne !*\n\n> :no_pedestrians: "
+
+        if data["NotificationAbsence"]:
+                text += "Notification d'absence : **Activée**"
+        else:
+                text += "Notification d'absence : **Désactivée**"
+
+        text += "\n> *Tu recevra une notification à chaque fois qu'une absence sera renseigner*\n\n> :pencil: "
+
+        if data["NotificationNotes"]:
+                text += "Notification de Note : **Activée**"
+        else:
+                text += "Notification de Note : **Désactivée**"
+
+        text += "\n> *Tu recevra une notifications à chaque fois qu'une nouvelle note sera renseigner !*\n\n> :books: "
+
+        if data["NotificationsDevoirs"]:
+                text += "Notification de devoirs : **Activée**"
+        else:
+                text += "Notification de devoirs : **Désactivée**"
+
+        text += "\n> *Tu recevra tous les soirs un résumé des devoirs pour le lendemain !*\n\n> :loudspeaker: "
+
+        if data["NotificationsInfos"]:
+                text += "Notification Infos/Sondages : **Activée**"
+        else:
+                text += "Notification Infos/Sondages : **Désactivée**"
+
+        text += "\n> *Tu recevra tous les soirs un résumé des informations et sondages de la journée*\n"
+
+        return text
+
+
+RGPD_view_text = "C'est ici que tu gère t'es données personnel :point_down: !\n\n" \
+                 "- Tu peut télécharger t'es données !\n*Tu auras alors un aperçu de tous ce qu'on sait sur toi" \
+                 "(pas grand chose je te rassure)*\n\n" \
+                 "- Tu peut supprimer t'es données !\n*On effacera alors toutes les informations a ton propos !*\n\n" \
+                 "- Tu peut aller voir (ou revoir) notre site avec notre politiques de confidentialité !"
+
+Credit_text = "Merci c'est très gentil de penser aux gens qui fabrique et code ce que tu utilise au quotidien !\n"\
+              "D'abord quelque remerciement aux personnes qui ont codées les modules que j'utilise !\n"\
+              "- Merci au module **[PronotePy](<https://github.com/bain3/pronotepy>)**\n" \
+              "- Merci au module **[DiscordPy](<https://discordpy.readthedocs.io>)**\n" \
+              "Et enfin, moi ! *[Bolmog](https://github.com/Bolmog1)*, pour vous servir !\n" \
+              "Mais surtout merci a vous d'utiliser le bot !"

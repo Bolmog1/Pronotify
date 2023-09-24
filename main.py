@@ -27,7 +27,7 @@ class SigninView(discord.ui.View):
         super().__init__()
         self.message_id = message_id
         self.message_content = message_content
-        self.add_item(discord.ui.Button(label="RGPD", url='https://CNIL.fr'))  # Bouton RGPD
+        self.add_item(discord.ui.Button(label="RGPD", url='https://bolmog1.github.io/Pronotify/#RGPD'))  # Bouton RGPD
 
     # Bouton Accepter
     @discord.ui.button(label="Accepter", style=discord.ButtonStyle.green)  # Bouton 'Accepter'
@@ -45,6 +45,7 @@ class SigninView(discord.ui.View):
                                                    "NotificationNotes": True, "NotificationsDevoirs": True,
                                                    "NotificationsInfos":  True})
             await interaction.user.send(f"Ton compte fonctionne ! Bonjour **{result[1]}** !\n{bienvenue_text}")
+            log(f"{interaction.user.id} ({interaction.user.display_name}) a désormais les notifications Discord")
         else:  # Il y'a une erreur
             if result[2] == 404:  # L'utilisateur à probablement donné un mauvais mdp/id
                 await interaction.user.send(f"C'est génant :sweat_smile:, il y'a une erreur !"
@@ -62,6 +63,96 @@ class SigninView(discord.ui.View):
         await interaction.user.send("Tu as refusé, ok ! Je comprend ! Au revoir (j'imagine)")
 
 
+class PreferenceView(discord.ui.View):
+    def __init__(self, msg):
+        super().__init__()
+        self.msg = msg
+
+    @discord.ui.button(label="Notif Moy", style=discord.ButtonStyle.blurple)
+    async def moyenne(self, interaction: discord.Interaction, button: discord.ui.Button):
+        data = get_user_json(str(interaction.user.id))
+        if data['NotificationMoyenne']:
+            change_user_json(interaction.user.id, 'NotificationMoyenne', False)
+            await interaction.response.send_message("Notification de moyenne **Désactiver**", ephemeral=True, delete_after=5)
+        else:
+            change_user_json(interaction.user.id, 'NotificationMoyenne', True)
+            await interaction.response.send_message("Notification de moyenne **Activée**", ephemeral=True, delete_after=5)
+        data = get_user_json(str(interaction.user.id))
+        await interaction.message.edit(content=preference_text(data))
+
+    @discord.ui.button(label="Notif Abs", style=discord.ButtonStyle.blurple)
+    async def absence(self, interaction: discord.Interaction, button: discord.ui.Button):
+        data = get_user_json(str(interaction.user.id))
+        if data['NotificationAbsence']:
+            change_user_json(interaction.user.id, 'NotificationAbsence', False)
+            await interaction.response.send_message("Notification d'absence **Désactiver**", ephemeral=True, delete_after=5)
+        else:
+            change_user_json(interaction.user.id, 'NotificationAbsence', True)
+            await interaction.response.send_message("Notification d'absence **Activée**", ephemeral=True, delete_after=5)
+        data = get_user_json(str(interaction.user.id))
+        await interaction.message.edit(content=preference_text(data))
+
+    @discord.ui.button(label="Notif Note", style=discord.ButtonStyle.blurple)
+    async def notes(self, interaction: discord.Interaction, button: discord.ui.Button):
+        data = get_user_json(str(interaction.user.id))
+        if data['NotificationNotes']:
+            change_user_json(interaction.user.id, 'NotificationNotes', False)
+            await interaction.response.send_message("Notification de Note **Désactiver**", ephemeral=True, delete_after=5)
+        else:
+            change_user_json(interaction.user.id, 'NotificationNotes', True)
+            await interaction.response.send_message("Notification de Note **Activée**", ephemeral=True, delete_after=5)
+        data = get_user_json(str(interaction.user.id))
+        await interaction.message.edit(content=preference_text(data))
+
+    @discord.ui.button(label="Notif Devoir", style=discord.ButtonStyle.blurple)
+    async def note(self, interaction: discord.Interaction, button: discord.ui.Button):
+        data = get_user_json(str(interaction.user.id))
+        if data['NotificationsDevoirs']:
+            change_user_json(interaction.user.id, 'NotificationsDevoirs', False)
+            await interaction.response.send_message("Notification des devoirs **Désactiver**", ephemeral=True, delete_after=5)
+        else:
+            change_user_json(interaction.user.id, 'NotificationsDevoirs', True)
+            await interaction.response.send_message("Notification des devoirs **Activée**", ephemeral=True, delete_after=5)
+        data = get_user_json(str(interaction.user.id))
+        await interaction.message.edit(content=preference_text(data))
+
+    @discord.ui.button(label="Notif info", style=discord.ButtonStyle.blurple)
+    async def info(self, interaction: discord.Interaction, button: discord.ui.Button):
+        data = get_user_json(str(interaction.user.id))
+        if data['NotificationsInfos']:
+            change_user_json(interaction.user.id, 'NotificationsInfos', False)
+            await interaction.response.send_message("Notification d'info **Désactiver**", ephemeral=True, delete_after=5)
+        else:
+            change_user_json(interaction.user.id, 'NotificationsInfos', True)
+            await interaction.response.send_message("Notification d'info **Activée**", ephemeral=True, delete_after=5)
+        data = get_user_json(str(interaction.user.id))
+        await interaction.message.edit(content=preference_text(data))
+
+
+class RGPDview(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(discord.ui.Button(label="Politique des donnèes", url='https://bolmog1.github.io/Pronotify/#RGPD'))
+
+    @discord.ui.button(label="Télécharger mes données", style=discord.ButtonStyle.grey)
+    async def download(self, interaction: discord.Interaction, button: discord.ui.Button):
+        try:
+            await interaction.response.send_message(file=discord.File(f"{interaction.user.id}.json"))
+        except Exception as e:
+            log(f"Erreur RGPD de {interaction.user.id} lors d'envoie du fichier : {e}")
+            await interaction.response.send_message("Une erreur est survenue pendant l'envoie de ton fichier.\n"
+                                           "es-tu inscrit aux notifications ?")
+
+    @discord.ui.button(label="Supprimer mes données", style=discord.ButtonStyle.red)
+    async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
+        try:
+            from os import remove
+            remove(f"{interaction.user.id}.json")
+            await interaction.response.send_message("T'es données ont était supprimer. bye :wave: !")
+        except Exception as e:
+            log(e)
+            await interaction.response.send_message("Quelque chose à mal tournée ici...")
+
 # ------------------------------------ FONCTIONS ------------------------------------
 
 
@@ -70,9 +161,16 @@ async def on_ready():
     try:
         synced = await bot.tree.sync()  # Synchronise les commandes
         print(len(synced))
+        log("Bot lancé !")
     except Exception as e:
         print(e)
-    await my_task()
+        log(e)
+    my_task.start()
+
+
+@bot.event
+async def on_error(event):
+    print('error', event)
 
 
 @tasks.loop(minutes=20)  # Lance des automatisation, s'éxecute toute les 20 minutes
@@ -98,18 +196,20 @@ async def my_task():
                     moyenne_general = None
                     if len(moyenne_eleve) != 0:
                         moyenne_general = round(sum(moyenne_eleve) / len(moyenne_eleve), 2)
-                    if data['moyenne'] != None and moyenne_general > data['moyenne']:
+                    if data['moyenne'] == None and moyenne_general != None:
+                        change_user_json(user.id, 'moyenne', moyenne_general)
+                    if moyenne_general != None and moyenne_general > data['moyenne']:
+                        change_user_json(user.id, 'moyenne', moyenne_general)
                         deco = discord.Embed(title=':bell: Notification Moyenne Général !',
                                              description=f":arrow_up_small: de {data['moyenne']} à {moyenne_general}",
                                              colour=0x3498db)
                         await user.send(embed=deco)
                     elif data['moyenne'] != None and moyenne_general < data['moyenne']:
+                        change_user_json(user.id, 'moyenne', moyenne_general)
                         deco = discord.Embed(title=':bell: Notification Moyenne Général !',
                                              description=f":arrow_down_small: de {data['moyenne']} à {moyenne_general}",
                                              colour=0x3498db)
                         await user.send(embed=deco)
-                    if data['moyenne'] != None and data["moyenne"] != moyenne_general:
-                        change_user_json(user.id, 'moyenne', moyenne_general)
                 if data["NotificationNotes"]:  # ----- NOTES -----
                     t = time.localtime()
                     if t.tm_hour == 18 and t.tm_min < 20:  # S'il est 18h
@@ -129,11 +229,15 @@ async def my_task():
                             await user.send(embed=deco)
                 if data["NotificationsInfos"]:  # ----- Infos -----
                     t = time.localtime()
+                    if t.tm_mon < 10:
+                        mois = f'0{t.tm_mon}'
+                    else:
+                        mois = t.tm_mon
                     if t.tm_min > 40:
                         nouvelles_infos = []
                         infos = client.information_and_surveys()  # Checks les infos
                         for info in infos:
-                            if str(info.creation_date) == f"{t.tm_year}-{t.tm_mon}-{t.tm_mday} {t.tm_hour}":
+                            if str(info.creation_date) == f"{t.tm_year}-{mois}-{t.tm_mday} {t.tm_hour}":
                                 if info.read:
                                     nouvelles_infos.append(f'*(info déjà lu)*~~{info.title} par {info.author}~~ le '
                                                            f'{info.start_date}')
@@ -142,7 +246,7 @@ async def my_task():
                         disc_s = client.discussions()  # Check les disscussions (no jugement sur l'ortho)
                         if t.tm_hour == 18 and t.tm_min < 20:
                             for disc in disc_s:
-                                if str(disc.date)[0:10] == f"{t.tm_year}-{t.tm_mon}-{t.tm_mday}":
+                                if str(disc.date)[0:10] == f"{t.tm_year}-{mois}-{t.tm_mday}":
                                     if disc.unread:
                                         nouvelles_infos.append(f'__Nouvelle disscussion__: {disc.subject} '
                                                                f'*par {disc.creator}*')
@@ -180,7 +284,12 @@ async def my_task():
                         import datetime
                         devoirs = client.homework(datetime.date.today())
                         for devoir in devoirs:
-                            nouvelles_infos.append(f"{devoir.description} de **{devoir.subject.name}**")
+                            if str(devoir.date) == f"{t.tm_year}-{mois}-{t.tm_wday}":
+                                if devoir.done:
+                                    nouvelles_infos.append(f"~~*{devoir.description}* en **{devoir.subject.name}**~~"
+                                                           f":heavy_check_mark:")
+                                else:
+                                    nouvelles_infos.append(f"*{devoir.description}* en **{devoir.subject.name}**")
                     if len(nouvelles_infos) > 0:
                         display = ""
                         for info in nouvelles_infos:
@@ -189,8 +298,9 @@ async def my_task():
                                              description=display, colour=0xf1c40f)
                         await user.send(embed=deco)
                 change_user_json(user.id, 'PreviousConnectionNotFailed', True)
-        except:
+        except Exception as e:
             if data["PreviousConnectionNotFailed"]:
+                log(f"Une erreur est survenue avec {user.id} ({user.id}), pronote : {e}")
                 await user.send('Une erreur est survenu durant la connexion a ton compte !')
                 change_user_json(user.id, 'PreviousConnectionNotFailed', False)
 
@@ -200,11 +310,43 @@ async def my_task():
 async def on_message(msg):
     if msg.channel.type is discord.ChannelType.private:  # Verifier d'être en DM
         if msg.content[0:15] == "Etablissement:(":
-            # await msg.author.send("yo")
-            await msg.author.send(RGPD_text, view=SigninView(int(msg.id), str(msg.content)))
+            if f"{msg.author.id}.json" in fichiers_user():
+                await msg.author.send("Evite de mettre t'es MdP en double... Apres, fait ce que tu veut !")
+            else:
+                await msg.author.send(RGPD_text, view=SigninView(int(msg.id), str(msg.content)))
+        elif msg.author.id == 696633499305771028:
+            if msg.content == "shutdown":
+                await msg.author.send("Arret du bot")
+                print("Bot Shutdown by user")
+                log(f"Bot arrêter par {msg.author.id}")
+                await bot.close()
 
 
 # ------------------------------------ COMMANDS ------------------------------------
+
+
+@bot.tree.command(name='parametres', description="Te permet de modifier t'es préférences")
+async def parametres(interaction: discord.Interaction):
+    if f"{interaction.user.id}.json" in fichiers_user():
+        await interaction.response.send_message(preference_text(get_user_json(interaction.user.id)), view=PreferenceView(interaction))
+    else:
+        await interaction.response.send_message("Pour changer t'es préférence en matière de Notifications il faudrait"
+                                                "d'abord y être inscrit pas vrai ? -> `/signin` pour en savoir + !")
+
+
+@bot.tree.command(name='credit', description="credit")
+async def credit(interaction: discord.Interaction):
+    await interaction.response.send_message(Credit_text)
+
+
+@bot.tree.command(name='rgpd', description="Te permet d'acceder au réglage concernant le RGPD")
+async def rgpd(interaction: discord.Interaction):
+    if f"{interaction.user.id}.json" in fichiers_user():
+        await interaction.response.send_message(RGPD_view_text, view=RGPDview())
+    else:
+        await interaction.response.send_message("Pour changer t'es préférence en matière de données personnel il "
+                                                "faudrait d'abord y être inscrit pas vrai ? -> "
+                                                "`/signin` pour en savoir + !")
 
 
 @bot.tree.command(name='version', description='Renvoie la version du bot !')
@@ -215,8 +357,11 @@ async def version(interaction: discord.Interaction):
 @bot.tree.command(name='signin', description='Inscrit toi au notifications')
 async def signin(interaction: discord.Interaction):
     if interaction.channel.type is discord.ChannelType.private:  # Vérifie d'être en DM
-        await interaction.response.send_message(signin_text)
-        await interaction.user.send(template_text)
+        if f"{interaction.user.id}.json" in fichiers_user():
+            await interaction.response.send_message("Je te connais toi !")
+        else:
+            await interaction.response.send_message(signin_text)
+            await interaction.user.send(template_text)
     else:
         await interaction.response.send_message("Continuons cette discussion en privé ?\n"
                                                 "*Tu ne veux pas montrer t'es secrets à tous le monde ?*",

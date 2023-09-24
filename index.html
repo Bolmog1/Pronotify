@@ -1,8 +1,212 @@
 <html>
 <head>
 	<title>Pronotify</title>
+	<style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
+        body {
+            background: #04151F;
+            background: linear-gradient(0deg, #04151F, #183A37);
+            margin: 0;
+        }
+        .TOPBAR {
+		    position: sticky;
+		    top: 0;
+		    z-index: 100;
+		    padding: 15px 0;
+		    backdrop-filter: blur(10px); /* Ajoutez le flou à l'arrière-plan */
+		    -webkit-backdrop-filter: blur(10px);
+		}
+        .TOPBAR ul {
+            list-style-type: none;
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+        .TOPBAR ul li {
+            display: inline;
+            margin-right: 20px; /* Espacement entre les éléments de la barre de navigation */
+            padding: 15px;
+            padding-bottom: 7.5px;
+        }
+        .TOPBAR a {
+            text-decoration: none;
+            color: white;
+            font-family: 'Montserrat';
+            font-size: 25px;
+            font-weight: 400;
+        }
+        h1 {
+            font-family: 'Montserrat';
+            color: white;
+            font-size: 100px;
+            text-align: center;
+            margin: 100px;
+            font-weight: 500;
+        }
+        .paragraph-left {
+        	padding-left: 75px;
+        }
+        .paragraph-left h3 {
+        	font-family: 'Montserrat'; 
+        	color: white; 
+        	font-size: 50; 
+        	padding-top: 1px; 
+        	margin-bottom: 0;
+        }
+        .paragraph-left p {
+        	font-family: 'Montserrat'; 
+        	color: white; 
+        	font-size: 30; 
+        	font-weight: 500px; 
+        	max-width: 50%;
+        }
+        .paragraph-right {
+        	padding-right: 75px; 
+        	text-align: right;
+        }
+        .paragraph-right h3 {
+        	font-family: 'Montserrat'; 
+        	color: white; 
+        	font-size: 50; 
+        	padding-top: 1px; 
+        	margin-bottom: 0;
+        }
+        .paragraph-right p {
+        	font-family: 'Montserrat'; 
+        	color: white; 
+        	font-size: 30; 
+        	font-weight: 500px; 
+        	margin-left: 50%;
+        }
+        .paragraph-left a {
+        	text-decoration: none;
+            color: white;
+            text-decoration: underline;
+        }
+        .discord a {
+        	background-color: #5865F2;
+        	border-radius: 5px;
+            padding: 15px;
+            padding-top: 7.5px;
+            padding-bottom: 7.5px;
+        }
+        .TOPBAR a:hover {
+			text-decoration: underline;
+        }
+        .BOTBAR {
+        	background-color: black;
+        	padding: 20px;
+        }
+        .BOTBAR h2 {
+        	font-family: 'Montserrat'; 
+        	color: white; 
+        	font-size: 30; 
+        	font-weight: 500px; 
+        	text-align: center;
+        	margin: 0;
+        }
+        .BOTBAR a {
+        	text-decoration: none;
+        	color: white;
+        }
+        .BOTBAR a:hover {
+			text-decoration: underline;
+        }
+        .premier {
+        	font-weight: 600; 
+        	margin-left: 75px;
+        }
+        @media only screen and (max-width: 1000px) {
+        	.TOPBAR ul li {
+            	display: list-item;
+            	padding-bottom: 0;
+            	text-align: center;
+            }
+            .TOPBAR {
+            	position: static;
+            }
+            .TOPBAR a {
+            	font-size: 5vw;
+            }
+            .premier {
+            	margin-left: 0;
+            	font-weight: 600; 
+            }
+            .premier a {
+            	margin-left: 0;
+            }
+        	h1 {
+        		font-size: 15vw;
+        		margin: 15vw;
+        	}
+        	.paragraph-right h3 {
+        		font-size: 7vw;
+        		text-align: center;
+        	}
+        	.paragraph-right p {
+        		font-size: 5vw;
+        		max-width: none;
+        		margin-left: 0;
+        	}
+        	.paragraph-right {
+        		padding-left: 0;
+        		padding: 4vw;
+        	}
+        	.paragraph-left h3 {
+        		font-size: 7vw;
+        		text-align: center;
+        	}
+        	.paragraph-left p {
+        		font-size: 5vw;
+        		max-width: none;
+        	}
+        	.paragraph-left {
+        		padding-left: 0;
+        		padding: 4vw;
+        	}
+        	
+        }
+    </style>
 </head>
-<body>
-	<h1>Pronotify</h1>
+<body style="background: #04151F; background: linear-gradient(0deg, #04151F, #183A37); margin: 0;">
+	<div class="TOPBAR">
+        <ul>
+            <li><a href="#" class="premier">Pronotify</a></li>
+            <li><a href="#open-source">Open-Source</a></li>
+            <li><a href="#copyright">Copyright</a></li>
+            <li><a href="#RGPD">RGPD</a></li>
+            <li><a href="#credit">Crédit</a></li>
+            <li class="discord"><a href="https://discord.gg/t7paHPBysD">Rejoindre le Discord</a></li>
+        </ul>
+    </div>
+		<h1 >Pronotify</h1>
+	<div class="paragraph-left">
+		<h3>Un bot, Une solution.</h3>
+		<p>Nombreux sont ceux que je connais qui voudrait des notifications pour Pronote, Mais comme personne chez eux à voulu coder cela, Je l'ai fait !</p>
+	</div>
+	<div class="paragraph-right" id="open-source">
+		<h3>Gratuit et Open-source !</h3>
+		<p>L'utilisation du bot est gratuite, et le bot est open-source sur Github, c'est pas beau ça ?</p>
+	</div>
+	<div class="paragraph-left" id="copyright">
+		<h3>Un copyright ?</h3>
+		<p>Le projet est open source, vous pouvez donc regardez librement le code, le copier pour un usage personnel ou juste t'inspirer !</br>En revanche, Je n'autorise pas d'utiliser mon code dans un but de profit. Et peut importe l'usage de mon code, créditer moi (;</p>
+	</div>
+	<div class="paragraph-right" id="RGPD">
+		<h3>Parlons RGPD</h3>
+		<p>Lorsque vous utilisez mon bot, je suis obligé d'enregistrer quelques données vous concernant /:</p>
+		<p>J'enregistre comme données :</br>Votre id discord </br><i>(Pour savoir qui notifier)</i></br>
+			L'id de votre message contenant votre MdP </br><i>(pour ce connecter et vous livrer vos notifs)</i></br>
+			Votre moyenne </br><i>(Pour vous notifier lorsqu'elle est modifier)</i></br>
+			Vos préférence en terme de notification </br><i>(Faites /parametre pour les modifier)</i></p>
+		<p>Pour gerer les RGPD faites /rgpd</p>
+	</div>
+	<div class="paragraph-left">
+		<h3>Crédits</h3>
+		<p>Ce projet n'aurait pas était possible sans les modules <a href="https://discordpy.readthedocs.io">Discord.py</a> et <a href="https://github.com/bain3/pronotepy">PronotePy</a> !</br>Oh, et moi c'est <a href="https://github.com/Bolmog1">Bolmog</a>, pour vous servir</p>
+	</div>
+	<div class="BOTBAR">
+		<h2><a href="https://github.com/Bolmog1/Pronotify">Github</a></h2>
+	</div>
 </body>
 </html>
