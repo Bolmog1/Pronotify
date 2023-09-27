@@ -11,7 +11,7 @@ from tools import *
 from pronote import *
 import time
 
-version_bot = 'En Dévleppoment pour 1.0'
+version_bot = 'En Dévleppoment pour 2.0'
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -165,18 +165,18 @@ async def on_ready():
     except Exception as e:
         print(e)
         log(e)
-    my_task.start()
 
 
-@bot.event
-async def on_error(event):
-    print('error', event)
-
-
-@tasks.loop(minutes=20)  # Lance des automatisation, s'éxecute toute les 20 minutes
-async def my_task():
+    t = time.localtime()
+    if t.tm_mon < 10:
+        mois = f'0{t.tm_mon}'
+    else:
+        mois = t.tm_mon
+    channel = bot.get_channel(1155904681671925840)
+    await channel.send(f"{t.tm_year}-{mois}-{t.tm_mday} / Executution quotidienne")
     utilisateurs = fichiers_user()
     for utilisateur in utilisateurs:
+        utilisateur = utilisateur[:-5]
         data = get_user_json(utilisateur)
         user = await bot.fetch_user(data['ID'])  # Rechercher l'objet user
         msg = await user.fetch_message(data["idMessageMdP"])  # Rechercher le message Mdp/id
@@ -187,7 +187,7 @@ async def my_task():
         try:
             client = pronotepy.Client(etab, username=id, password=mdp)
             if client.logged_in:
-                if data["NotificationMoyenne"]: # ----- MOYENNE -----
+                if data["NotificationMoyenne"]:  # ----- MOYENNE -----
                     notes = client.current_period  # Récupération des notes du Trimestre
                     moyennes_notes = notes.averages  # Récupérations des moyennes des notes
                     moyenne_eleve = []
@@ -210,95 +210,8 @@ async def my_task():
                                              description=f":arrow_down_small: de {data['moyenne']} à {moyenne_general}",
                                              colour=0x3498db)
                         await user.send(embed=deco)
-                if data["NotificationNotes"]:  # ----- NOTES -----
-                    t = time.localtime()
-                    if t.tm_hour == 18 and t.tm_min < 20:  # S'il est 18h
-                        nouvelles_notes = []
-                        periods = client.periods  # Obtenir les Notes
-                        for period in periods:
-                            for grade in period.grades:
-                                if grade.date == f'{t.tm_year}-{t.tm_mon}-{t.tm_mday}':
-                                    nouvelles_notes.append(f'__Nouvelle note__: {grade.grade}/{grade.out_of} en '
-                                                           f'{grade.subject} *(Coeff {grade.coefficient})*')
-                        if len(nouvelles_notes) > 0:
-                            display = ""
-                            for info in nouvelles_notes:
-                                display += f"{info}\n"
-                            deco = discord.Embed(title=':bell: Notification Notes !',
-                                                 description=display, colour=0x27ae60)
-                            await user.send(embed=deco)
-                if data["NotificationsInfos"]:  # ----- Infos -----
-                    t = time.localtime()
-                    if t.tm_mon < 10:
-                        mois = f'0{t.tm_mon}'
-                    else:
-                        mois = t.tm_mon
-                    if t.tm_min > 40:
-                        nouvelles_infos = []
-                        infos = client.information_and_surveys()  # Checks les infos
-                        for info in infos:
-                            if str(info.creation_date) == f"{t.tm_year}-{mois}-{t.tm_mday} {t.tm_hour}":
-                                if info.read:
-                                    nouvelles_infos.append(f'*(info déjà lu)*~~{info.title} par {info.author}~~ le '
-                                                           f'{info.start_date}')
-                                else:
-                                    nouvelles_infos.append(f'**Nouvelle Info:**{info.title} par {info.author}')
-                        disc_s = client.discussions()  # Check les disscussions (no jugement sur l'ortho)
-                        if t.tm_hour == 18 and t.tm_min < 20:
-                            for disc in disc_s:
-                                if str(disc.date)[0:10] == f"{t.tm_year}-{mois}-{t.tm_mday}":
-                                    if disc.unread:
-                                        nouvelles_infos.append(f'__Nouvelle disscussion__: {disc.subject} '
-                                                               f'*par {disc.creator}*')
-                                    else:
-                                        nouvelles_infos.append(f'*(disscussion déjà lu)*: {disc.subject} '
-                                                               f'*par {disc.creator}*')
-                        if len(nouvelles_infos) > 0:
-                            display = ""
-                            for info in nouvelles_infos:
-                                display += f"{info}\n"
-                            deco = discord.Embed(title=':bell: Notification Infos/Sondages !',
-                                                 description=display, colour=0x9b59b6)
-                            await user.send(embed=deco)
-                if data['NotificationAbsence']:
-                    nouvelles_infos = []
-                    t = time.localtime()
-                    if t.tm_hour == 18 and t.tm_min < 20:
-                        import datetime
-                        trimestre = client.current_period
-                        absences = trimestre.absences
-                        for absence in absences:
-                            if absence.from_date == datetime.date.today():
-                                nouvelles_infos.append(f"Absence aujourd'hui pendant {absence.hours}")
-                    if len(nouvelles_infos) > 0:
-                        display = ""
-                        for info in nouvelles_infos:
-                            display += f"{info}\n"
-                        deco = discord.Embed(title=':bell: Notification Absences !',
-                                             description=display, colour=0xe74c3c)
-                        await user.send(embed=deco)
-                if data['NotificationsDevoirs']:
-                    nouvelles_infos = []
-                    t = time.localtime()
-                    if t.tm_hour == 18 and t.tm_min < 20:
-                        import datetime
-                        devoirs = client.homework(datetime.date.today())
-                        for devoir in devoirs:
-                            if str(devoir.date) == f"{t.tm_year}-{mois}-{t.tm_wday}":
-                                if devoir.done:
-                                    nouvelles_infos.append(f"~~*{devoir.description}* en **{devoir.subject.name}**~~"
-                                                           f":heavy_check_mark:")
-                                else:
-                                    nouvelles_infos.append(f"*{devoir.description}* en **{devoir.subject.name}**")
-                    if len(nouvelles_infos) > 0:
-                        display = ""
-                        for info in nouvelles_infos:
-                            display += f"{info}\n"
-                        deco = discord.Embed(title=':bell: Notification des Devoirs pour demain !',
-                                             description=display, colour=0xf1c40f)
-                        await user.send(embed=deco)
-                change_user_json(user.id, 'PreviousConnectionNotFailed', True)
         except Exception as e:
+            print(e)
             if data["PreviousConnectionNotFailed"]:
                 log(f"Une erreur est survenue avec {user.id} ({user.id}), pronote : {e}")
                 await user.send('Une erreur est survenu durant la connexion a ton compte !')
