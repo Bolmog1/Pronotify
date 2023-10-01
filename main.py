@@ -11,7 +11,7 @@ from tools import *
 from pronote import *
 import time
 
-version_bot = 'En Dévleppoment pour 2.0'
+version_bot = '1.0'
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -137,7 +137,7 @@ class RGPDview(discord.ui.View):
     @discord.ui.button(label="Télécharger mes données", style=discord.ButtonStyle.grey)
     async def download(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            await interaction.response.send_message(file=discord.File(f"{interaction.user.id}.json"))
+            await interaction.response.send_message(file=discord.File(f"{path_user_files}{interaction.user.id}.json"))
         except Exception as e:
             log(f"Erreur RGPD de {interaction.user.id} lors d'envoie du fichier : {e}")
             await interaction.response.send_message("Une erreur est survenue pendant l'envoie de ton fichier.\n"
@@ -147,7 +147,7 @@ class RGPDview(discord.ui.View):
     async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             from os import remove
-            remove(f"{interaction.user.id}.json")
+            remove(f"{path_user_files}{interaction.user.id}.json")
             await interaction.response.send_message("T'es données ont était supprimer. bye :wave: !")
         except Exception as e:
             log(e)

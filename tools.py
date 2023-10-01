@@ -21,18 +21,20 @@ def extract(chaine):
 
 def get_user_json(fichier):
     import json
-    with open(f"{fichier}.json", 'r') as f:
+    from config import path_user_files
+    with open(f"{path_user_files}{fichier}.json", 'r') as f:
         data = json.load(f)
     return data
 
 
 def change_user_json(id, para, value):
     import json
-    with open(f'{id}.json', 'r') as f:
+    from config import path_user_files
+    with open(f'{path_user_files}{id}.json', 'r') as f:
         data = json.load(f)
     f.close()
     data[para] = value
-    with open(f'{id}.json', 'w') as f:
+    with open(f'{path_user_files}{id}.json', 'w') as f:
         json.dump(data, f)
     f.close()
 
@@ -55,8 +57,8 @@ def create_user_file(id, contenu):
     import json
     try:
         donnees = contenu
-
-        with open(f'{id}.json', 'w') as fichier:
+        from config import path_user_files
+        with open(f'{path_user_files}{id}.json', 'w') as fichier:
             json.dump(donnees, fichier)
 
         print(f"Fichier JSON '{id}' créé avec succès avec l'ID {id}.")
